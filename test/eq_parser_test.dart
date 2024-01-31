@@ -231,7 +231,7 @@ void main() {
 
     test('custom', () {
       var parser = EqParser();
-      parser.functions['f'] = FunctionDef((v)=>v * 2, 1);
+      parser.functions['f'] = FunctionDef((v) => v * 2, 1);
 
       num result = parser.parse('f(3.78)');
       expect(result, equals(3.78 * 2));
@@ -247,7 +247,7 @@ void main() {
       });
 
       num result = parser.parse('dozen + 3 ^ (factor * sin(pi/2))');
-      expect(result, equals(12 + pow(3, (5.12 * sin(pi/2)))));
+      expect(result, equals(12 + pow(3, (5.12 * sin(pi / 2)))));
     });
   });
 
@@ -255,13 +255,13 @@ void main() {
     test('invalid operations', () {
       int errorCount = 0;
       var parser = EqParser();
-      parser.onError = (m, p)=>errorCount++;
+      parser.onError = (m, p) => errorCount++;
       num result = 0;
 
       result = parser.parse('12 23');
       expect(result, isNaN);
       expect(errorCount, greaterThan(0));
-      
+
       errorCount = 0;
       result = parser.parse('12 + (3 * 2');
       expect(result, isNaN);
@@ -286,8 +286,6 @@ void main() {
       result = parser.parse('11 ** 2');
       expect(result, isNaN);
       expect(errorCount, greaterThan(0));
-
     });
   });
-
 }

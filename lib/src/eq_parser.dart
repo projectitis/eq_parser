@@ -1,6 +1,16 @@
 import 'dart:math';
 
-enum TokenType { unknown, number, operator, function, leftParenthesis, rightParenthesis, separator, eof, error }
+enum TokenType {
+  unknown,
+  number,
+  operator,
+  function,
+  leftParenthesis,
+  rightParenthesis,
+  separator,
+  eof,
+  error
+}
 
 class Token {
   TokenType type = TokenType.unknown;
@@ -33,7 +43,8 @@ class FunctionDef {
 
   num _apply(Token token) {
     if (token.params == null || token.params!.length != paramCount) {
-      throw Exception('Wrong number of parameters for function "${token.function}"');
+      throw Exception(
+          'Wrong number of parameters for function "${token.function}"');
     }
     return Function.apply(function, token.params!);
   }
@@ -108,7 +119,8 @@ class EqParser {
       return _errorValue;
     }
     if (_stack.length != 1) {
-      if (onError != null) onError!('Equation could not be parsed correctly', 0);
+      if (onError != null)
+        onError!('Equation could not be parsed correctly', 0);
       return _errorValue;
     }
 
@@ -129,11 +141,14 @@ class EqParser {
               ..type = TokenType.number
               ..value = 0);
           } else {
-            if (onError != null) onError!('Operator "${token.operator}" must follow a number', token.pos);
+            if (onError != null)
+              onError!('Operator "${token.operator}" must follow a number',
+                  token.pos);
             return false;
           }
         }
-        while ((_stack.length > 2) && _hasPrecedence(token, _stack[_stack.length - 2])) {
+        while ((_stack.length > 2) &&
+            _hasPrecedence(token, _stack[_stack.length - 2])) {
           if (!_processStack(limit: 1)) {
             return false;
           }
@@ -151,10 +166,12 @@ class EqParser {
           } else if (_stack.last.type == TokenType.leftParenthesis) {
             _stack.removeLast();
             break;
-          } else if (_stack.length > 1 && _stack[_stack.length - 2].type == TokenType.leftParenthesis) {
+          } else if (_stack.length > 1 &&
+              _stack[_stack.length - 2].type == TokenType.leftParenthesis) {
             _stack.removeAt(_stack.length - 2);
             break;
-          } else if (_stack.length > 1 && _stack[_stack.length - 2].type == TokenType.function) {
+          } else if (_stack.length > 1 &&
+              _stack[_stack.length - 2].type == TokenType.function) {
             _stack[_stack.length - 2].params!.add(_stack.removeLast().value);
             if (!_processFunction(_stack.last)) {
               return false;
@@ -194,7 +211,8 @@ class EqParser {
         break;
 
       default:
-        if (onError != null) onError!('Unexpected token "${token.string}"', token.pos);
+        if (onError != null)
+          onError!('Unexpected token "${token.string}"', token.pos);
         return false;
     }
     return true;
@@ -205,7 +223,8 @@ class EqParser {
       if (_stack[_stack.length - 3].type == TokenType.number &&
           _stack[_stack.length - 2].type == TokenType.operator &&
           _stack[_stack.length - 1].type == TokenType.number) {
-        if (!_applyOperator(_stack.removeLast(), _stack.removeLast(), _stack.last)) {
+        if (!_applyOperator(
+            _stack.removeLast(), _stack.removeLast(), _stack.last)) {
           return false;
         }
       } else {
@@ -220,7 +239,8 @@ class EqParser {
       token.value = functions[token.function]!._apply(token);
       token.type = TokenType.number;
     } else {
-      if (onError != null) onError!('Unknown function "${token.function}"', token.pos);
+      if (onError != null)
+        onError!('Unknown function "${token.function}"', token.pos);
       return false;
     }
     return true;
@@ -247,7 +267,8 @@ class EqParser {
         token.value = token.value % token2.value;
         break;
       default:
-        if (onError != null) onError!('Unknown operator "${operator.operator}"', operator.pos);
+        if (onError != null)
+          onError!('Unknown operator "${operator.operator}"', operator.pos);
         return false;
     }
     return true;
@@ -321,7 +342,12 @@ class EqParser {
           break;
         }
         break;
-      } else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%') {
+      } else if (c == '+' ||
+          c == '-' ||
+          c == '*' ||
+          c == '/' ||
+          c == '^' ||
+          c == '%') {
         if (started) {
           _rewind();
           break;
@@ -369,7 +395,8 @@ class EqParser {
         token.value = references[token.string]!;
         break;
       }
-      if (onError != null) onError!('Unknown token "${token.string}"', token.pos);
+      if (onError != null)
+        onError!('Unknown token "${token.string}"', token.pos);
       token.type = TokenType.error;
       break;
     }
