@@ -144,8 +144,8 @@ class EqParser {
               ..value = 0);
           } else {
             if (onError != null) {
-              onError!('Operator "${token.string}" must follow a number',
-                  token.pos);
+              onError!(
+                  'Operator "${token.string}" must follow a number', token.pos);
             }
             return false;
           }
@@ -418,5 +418,4 @@ class EqParser {
 
     return token;
   }
-
 }
