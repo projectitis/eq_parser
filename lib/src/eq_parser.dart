@@ -15,15 +15,15 @@ enum TokenType {
 class Token {
   TokenType type = TokenType.unknown;
   String string = '';
+  num value = 0;
 
   String function = '';
   List<dynamic>? params;
-  String operator = '';
-  num value = 0;
 
   int pos = 0;
 }
 
+/// Built-in functions
 num abs(num x) => x.abs();
 num floor(num x) => x.floor();
 num ceil(num x) => x.ceil();
@@ -119,14 +119,16 @@ class EqParser {
       return _errorValue;
     }
     if (_stack.length != 1) {
-      if (onError != null)
+      if (onError != null) {
         onError!('Equation could not be parsed correctly', 0);
+      }
       return _errorValue;
     }
 
     return _stack[0].value;
   }
 
+  /// Add a token to the stack and process it if required
   bool _push(Token token) {
     switch (token.type) {
       case TokenType.number || TokenType.leftParenthesis || TokenType.function:
@@ -136,14 +138,15 @@ class EqParser {
       case TokenType.operator:
         // Operator must follow a number, unless it's the 'negative' sign
         if (_stack.isEmpty || _stack.last.type != TokenType.number) {
-          if (token.operator == '-') {
+          if (token.string == '-') {
             _stack.add(Token()
               ..type = TokenType.number
               ..value = 0);
           } else {
-            if (onError != null)
-              onError!('Operator "${token.operator}" must follow a number',
+            if (onError != null) {
+              onError!('Operator "${token.string}" must follow a number',
                   token.pos);
+            }
             return false;
           }
         }
@@ -161,7 +164,9 @@ class EqParser {
         int stackLen = 0;
         while (true) {
           if (_stack.isEmpty) {
-            if (onError != null) onError!('Matching "(" not found', token.pos);
+            if (onError != null) {
+              onError!('Matching "(" not found', token.pos);
+            }
             return false;
           } else if (_stack.last.type == TokenType.leftParenthesis) {
             _stack.removeLast();
@@ -182,7 +187,9 @@ class EqParser {
               return false;
             }
             if (stackLen > 0 && _stack.length == stackLen) {
-              if (onError != null) onError!('Error processing ")"', token.pos);
+              if (onError != null) {
+                onError!('Error processing ")"', token.pos);
+              }
               return false;
             }
             stackLen = _stack.length;
@@ -202,7 +209,9 @@ class EqParser {
               return false;
             }
             if (stackLen > 0 && _stack.length == stackLen) {
-              if (onError != null) onError!('Error processing ","', token.pos);
+              if (onError != null) {
+                onError!('Error processing ","', token.pos);
+              }
               return false;
             }
             stackLen = _stack.length;
@@ -211,13 +220,16 @@ class EqParser {
         break;
 
       default:
-        if (onError != null)
+        if (onError != null) {
           onError!('Unexpected token "${token.string}"', token.pos);
+        }
         return false;
     }
     return true;
   }
 
+  /// Looks at the top 3 elements on the stack and processes them if they are
+  /// a group of [number, operator, number]
   bool _processStack({int limit = -1}) {
     while (_stack.length > 2 && limit-- != 0) {
       if (_stack[_stack.length - 3].type == TokenType.number &&
@@ -239,15 +251,16 @@ class EqParser {
       token.value = functions[token.function]!._apply(token);
       token.type = TokenType.number;
     } else {
-      if (onError != null)
+      if (onError != null) {
         onError!('Unknown function "${token.function}"', token.pos);
+      }
       return false;
     }
     return true;
   }
 
   bool _applyOperator(Token token2, Token operator, Token token) {
-    switch (operator.operator) {
+    switch (operator.string) {
       case '+':
         token.value = token.value + token2.value;
         break;
@@ -267,8 +280,9 @@ class EqParser {
         token.value = token.value % token2.value;
         break;
       default:
-        if (onError != null)
-          onError!('Unknown operator "${operator.operator}"', operator.pos);
+        if (onError != null) {
+          onError!('Unknown operator "${operator.string}"', operator.pos);
+        }
         return false;
     }
     return true;
@@ -284,7 +298,7 @@ class EqParser {
     if (t.type == TokenType.leftParenthesis) {
       return 1;
     } else if (t.type == TokenType.operator) {
-      switch (t.operator) {
+      switch (t.string) {
         case '+' || '-':
           return 2;
         case '*' || '/':
@@ -312,7 +326,7 @@ class EqParser {
       String c = _str[_pos++];
 
       // Ignore whitespace if not yet started
-      if (c == ' ' || c == '\t') {
+      if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
         if (started) {
           break;
         } else {
@@ -327,7 +341,7 @@ class EqParser {
             token.pos = _pos;
             started = false;
           } else {
-            _rewind();
+            _pos--;
           }
           break;
         }
@@ -338,7 +352,7 @@ class EqParser {
         token.type = TokenType.rightParenthesis;
         token.pos = _pos;
         if (started) {
-          _rewind();
+          _pos--;
           break;
         }
         break;
@@ -349,16 +363,16 @@ class EqParser {
           c == '^' ||
           c == '%') {
         if (started) {
-          _rewind();
+          _pos--;
           break;
         }
         token.type = TokenType.operator;
-        token.operator = c;
+        token.string = c;
         token.pos = _pos;
         break;
       } else if (c == ',') {
         if (started) {
-          _rewind();
+          _pos--;
           break;
         }
         token.type = TokenType.separator;
@@ -395,8 +409,9 @@ class EqParser {
         token.value = references[token.string]!;
         break;
       }
-      if (onError != null)
+      if (onError != null) {
         onError!('Unknown token "${token.string}"', token.pos);
+      }
       token.type = TokenType.error;
       break;
     }
@@ -404,7 +419,4 @@ class EqParser {
     return token;
   }
 
-  void _rewind([int amount = 1]) {
-    _pos -= amount;
-  }
 }

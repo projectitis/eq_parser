@@ -1,3 +1,9 @@
+## 1.0.1
+
+- Code format improvements
+- Support equations across multiple lines (ignore newlines)
+- Add minimal (lite) implementation of the parser
+
 ## 1.0.0
 
 - Initial version.

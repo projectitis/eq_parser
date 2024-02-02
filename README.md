@@ -19,6 +19,7 @@ A light, fast equation parser that supports functions and variables.
 ## Getting started
 
 - Add `eq_parser` to your `pubspec.yaml`
+- Add `import 'package:eq_parser/eq_parser.dart';` to your code
 
 ## Usage
 
@@ -44,3 +45,13 @@ notation. I am not sure if it actually matches any existing algorithm or if
 it is novel. It's based on a single stack, and does not use recursion. Tokens
 are pushed to the stack just once, and popped/processed just once, so performance is
 fast and linear with respect to the length of the equation.
+
+There is a minimal implementation included for reference purposes. It can be
+used like this:
+
+```dart
+import 'package:eq_parser/src/eq_parser_lite.dart';
+
+num result = EqParserLite()..parse('(17 - 7.12) * 2 ^ 4');
+```
+
