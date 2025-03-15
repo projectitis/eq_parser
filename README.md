@@ -15,6 +15,7 @@ A light, fast equation parser that supports functions and variables.
 - Supports user-defined functions
 - Supports user-defined variables (references)
 - User-defined error handling
+- Fast (see [benchmark results](#benchmark-results))
 
 ## Getting started
 
@@ -44,7 +45,7 @@ This parser is not based on the shunting yard algorithm or reverse polish
 notation. I am not sure if it actually matches any existing algorithm or if
 it is novel. It's based on a single stack, and does not use recursion. Tokens
 are pushed to the stack just once, and popped/processed just once, so performance is
-fast and linear with respect to the length of the equation.
+fast (see [benchmarks](#benchmark-results)) and linear with respect to the length of the equation.
 
 There is a minimal implementation included for reference purposes. It can be
 used like this:
@@ -55,3 +56,27 @@ import 'package:eq_parser/src/eq_parser_lite.dart';
 num result = EqParserLite()..parse('(17 - 7.12) * 2 ^ 4');
 ```
 
+## Benchmark results
+
+Benchmarks are in the test folder and are run as part of test execution.
+EqParser is compared against several other equation/formula parsing libraries.
+Please let me know if you would like any other parsers compared, or if any of
+the tests for the other packages are incorrect or are unfairly un-optimised.
+
+### Results
+
+Lower is better.
+
+| Parser             | Time (ms) | Faster |
+|--------------------|-----------|--------|
+| __eq_parser__      | __774__   |        |
+| formula_parser     | 4933      | 6.4x   |
+| math_expressions   | 6228      | 8.0x   |
+| math_parser        | 6698      | 8.7x   |
+| quds_formula_parser| 19954     | 25.8x  |
+
+### Running the benchmarks
+
+```dart
+dart test .\test\eq_parser_benchmarks_test.dart
+```
