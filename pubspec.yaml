@@ -1,6 +1,6 @@
 name: eq_parser
 description: A lightweight and fast mathematical equation parser with support for functions and variables.
-version: 1.0.3
+version: 1.0.4
 repository: https://github.com/projectitis/eq_parser.git
 
 environment:

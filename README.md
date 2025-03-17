@@ -41,11 +41,15 @@ num result = parser.parse('multiply(x, y)');
 
 ## Additional information
 
-This parser is not based on the shunting yard algorithm or reverse polish
-notation. I am not sure if it actually matches any existing algorithm or if
-it is novel. It's based on a single stack, and does not use recursion. Tokens
-are pushed to the stack just once, and popped/processed just once, so performance is
-fast (see [benchmarks](#benchmark-results)) and linear with respect to the length of the equation.
+Although not using any existing technique as a reference, this parser is
+very likely an implementation of operator precedence parsing, such as Pratt
+Parsing. I have not studied parsing techniques, but reading summaries online
+it appears to work in the same way, without creating an intermediary format
+such as Reverse Polish Notation. 
+
+Tokens are pushed to the stack just once, and popped/processed just once, so
+performance is fast (see [benchmarks](#benchmark-results)) and linear with
+respect to the length of the equation.
 
 There is a minimal implementation included for reference purposes. It can be
 used like this:

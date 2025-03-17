@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Updated readme to explain the basis of the algorithm
+
 ## 1.0.3
 
 - Added benchmarks to tests and benchmark results to readme
